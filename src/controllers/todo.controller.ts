@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 //Creare an todo
 export const createTodo = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
-        if (!req.user) {
+        if(!req.user) {
             return res.status(401).json({ error: "Unauthorized" });
         }
         const todo = await prisma.todo.create({ data: {...req.body, authorId: req.user.id } });
@@ -16,10 +16,16 @@ export const createTodo = async (req: AuthRequest, res: Response, next: NextFunc
     }
 }
 
-export const listTodos = async (req: Request, res: Response, next: NextFunction) => {
+export const listTodos = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
+
+        if(!req.user) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+
         const { page="1", limit= "10", completed, q, sortBy= "-createdAt" } = req.query;
-        const filter= {};
+
+        const filter = { authorId: req.user.id };
         const skip = (Number(page) - 1) * Number(limit);
         const sortByStr = String(sortBy);
         let orderBy: any = { createdAt: "desc" };
@@ -50,12 +56,18 @@ export const listTodos = async (req: Request, res: Response, next: NextFunction)
     }
 }
 
-export const getTodoById = async (req: Request, res: Response, next: NextFunction) => {
+export const getTodoById = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
+        
+        if(!req.user) {
+            return res.status(401).json({ error: 'Unauthorized' })
+        }
+
         const id = parseInt(req.params.id, 10);
         const todo = await prisma.todo.findUnique({
             where: {
-                id
+                id,
+                authorId: req.user.id
             }
         });
         if (!todo) {
@@ -67,29 +79,41 @@ export const getTodoById = async (req: Request, res: Response, next: NextFunctio
     }
 }
 
-export const updateTodo = async (req: Request, res: Response, next: NextFunction) => {
+export const updateTodo = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
+        if(!req.user) {
+            return res.status(401).json({ error: 'Unauthorized' })
+        }
         const id = parseInt(req.params.id, 10)
         const todo = await prisma.todo.update({
             where: {
-                id
+                id,
+                authorId: req.user.id
             },
             data: {
                 ...req.body
             }
         });
-        if(!todo) return res.status(404).json({ message: 'Item not found' });
+        if(!todo) {
+            return res.status(404).json({ message: 'Item not found' })
+        };
         res.json({ data: todo })
     } catch (err) {
         next(err)
     }
 }
 
-export const deleteTodo = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteTodo = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
+        if(!req.user) {
+            return res.status(401).json({ error: 'Unauthorized' })
+        }
         const id = parseInt(req.params.id, 10);
         const todo = await prisma.todo.delete({
-            where: {id}
+            where: {
+                id,
+                authorId: req.user.id
+            }
         });
         if(!todo) return res.status(404).json({ message: 'Item not found' });
         res.status(204).send()
