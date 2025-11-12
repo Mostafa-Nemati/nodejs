@@ -14,30 +14,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Todo {
-  id           Int      @id @default(autoincrement())
-  createdAt    DateTime @default(now())
-  title        String   
-  description  String   @default("")
-  completed    Boolean  @default(false)
-  priority     Priority @default(MEDIUM)
-  authorId     Int
-  User         User     @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
 model User {
-  id          Int       @id @default(autoincrement())
-  createdAt   DateTime  @default(now())
-  name        String  
-  email       String    @unique
-  password    String  
-  verifyCode  String  
-  isVerified  Boolean   @default(false) 
-  Todo        Todo[]
+  id           Int      @id @default(autoincrement())
+  name         String
+  family       String
+  phone        String   @unique
+  nationalCode String?
+  password     String
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
-enum Priority {
-  LOW
-  MEDIUM
-  HIGH
+enum Role {
+  ADMIN
+  USER
 }

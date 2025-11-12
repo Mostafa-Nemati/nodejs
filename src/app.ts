@@ -1,6 +1,8 @@
 import express from "express";
 import todoRoutes from "./routes/todo.routes";
 import userRoutes from './routes/user.routes';
+import authRoutesAdmin from './modules/admin/auth/route';
+import authRoutesUser from './modules/user/auth/route';
 import { errorHandler } from "./middlewares/errorHandler";
 import multer from 'multer';
 import cors from 'cors';
@@ -16,20 +18,22 @@ app.use(helmet());
 app.use(cors({
     origin: 'https://example.com',
     methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type', 'Authorizaion']
+    allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
 app.use(express.json());
-
 // Parse URL-encoded bodies
 app.use(express.urlencoded({ extended: true }));
-
 // for form-data
 app.use(upload.none());
 
-//Routes
-app.use('/api/user/todo', todoRoutes);
-app.use('/api/user', userRoutes)
+
+//Routes Admin
+app.use('/api/admin/auth', authRoutesAdmin);
+
+//Routes User
+app.use('/api/user/auth', authRoutesUser);
+
 
 
 // Global error handler (should be after routes)
