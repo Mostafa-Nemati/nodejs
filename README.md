@@ -3,3 +3,4 @@
 -1 npx prisma migrate dev
 2- npx prisma generate
 -3 npm run dev
+-4 ts-node prisma/seed.ts

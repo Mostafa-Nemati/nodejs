@@ -1,7 +1,7 @@
 import express from "express";
-import todoRoutes from "./routes/todo.routes";
-import userRoutes from './routes/user.routes';
 import authRoutesAdmin from './modules/admin/auth/route';
+import ipRoutesAdmin from './modules/admin/ip/route';
+import shiftRoutesAdmin from './modules/admin/shift/route';
 import authRoutesUser from './modules/user/auth/route';
 import { errorHandler } from "./middlewares/errorHandler";
 import multer from 'multer';
@@ -30,6 +30,8 @@ app.use(upload.none());
 
 //Routes Admin
 app.use('/api/admin/auth', authRoutesAdmin);
+app.use('/api/admin/ip', ipRoutesAdmin);
+app.use('/api/admin/shift', shiftRoutesAdmin);
 
 //Routes User
 app.use('/api/user/auth', authRoutesUser);
