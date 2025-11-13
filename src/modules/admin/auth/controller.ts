@@ -35,11 +35,16 @@ export const loginAdmin = async (req: Request, res: Response, next: NextFunction
         if (!valid) return res.status(401).json({ error: "پسورد معتبر نیست" });
 
         const token = jwt.sign(
-            { id: user.id },
+            { id: user.id, role: user.role },
             process.env.JWT_SECRET || 'fallbackSecretKey',
             { expiresIn: '10d' }
         )
-        return { message: "با موفقیت ثبت شد.", user, access_token: token }
+        const userInfo = {
+            id: user.id,
+            name: user.name,
+            family: user.family,
+        }
+        res.status(200).json({ data: { message: "با موفقیت ثبت شد.", user: userInfo, access_token: token } });
     } catch (error) {
         next(error)
     }

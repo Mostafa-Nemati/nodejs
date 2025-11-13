@@ -6,8 +6,8 @@ import { loginAdmin, registerAdmin } from "./controller";
 
 const router = Router();
 
-router.post('/admin/register', validate(registerSchema), registerAdmin);
-router.post('/admin/login', loginAdmin);
+router.post('/register', validate(registerSchema), registerAdmin);
+router.post('/login', loginAdmin);
 
 
 export default router;

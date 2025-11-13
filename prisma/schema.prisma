@@ -21,14 +21,14 @@ model User {
   phone            String           @unique
   nationalCode     String?
   password         String
-  baseSalary       Float
+  baseSalary       Float?
   role             Role             @default(USER)
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-  attendanceLogs   AttendanceLog[]
-  monthlySummaries MonthlySummary[]
   shift            Shift?           @relation(fields: [shiftId], references: [id])
   shiftId          Int?
+  attendanceLogs   AttendanceLog[]
+  monthlySummaries MonthlySummary[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 }
 
 model Shift {

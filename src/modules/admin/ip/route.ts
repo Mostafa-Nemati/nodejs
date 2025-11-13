@@ -6,7 +6,7 @@ import { createIp } from "./controller";
 const router = Router();
 
 //POST
-router.post('/admin/ip', validate(ipSchema), createIp);
+router.post('/create', validate(ipSchema), createIp);
 
 
 export default router;
