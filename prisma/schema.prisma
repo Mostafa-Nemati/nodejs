@@ -21,6 +21,7 @@ model User {
   phone            String           @unique
   nationalCode     String?
   password         String
+  baseSalary       Float
   role             Role             @default(USER)
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
@@ -77,6 +78,7 @@ model MonthlySummary {
   month         String
   totalHours    Float?
   totalOvertime Float?
+  totalSalary   Float?
   totalAbsent   Int?
   finalizedAt   DateTime?
   createdAt     DateTime  @default(now())
