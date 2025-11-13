@@ -15,18 +15,81 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  name         String
-  family       String
-  phone        String   @unique
-  nationalCode String?
-  password     String
-  role         Role     @default(USER)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id               Int              @id @default(autoincrement())
+  name             String
+  family           String
+  phone            String           @unique
+  nationalCode     String?
+  password         String
+  role             Role             @default(USER)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  attendanceLogs   AttendanceLog[]
+  monthlySummaries MonthlySummary[]
+}
+
+model Shift {
+  id             Int             @id @default(autoincrement())
+  name           String
+  shiftSchedules ShiftSchedule[]
+  ips            IP[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model ShiftSchedule {
+  id        Int     @id @default(autoincrement())
+  shift     Shift   @relation(fields: [shiftId], references: [id])
+  shiftId   Int
+  isActive  Boolean @default(false)
+  dayOfWeek Int
+  startTime String?
+  endTime   String?
+}
+
+model IP {
+  id        Int    @id @default(autoincrement())
+  name      String
+  ipAddress String
+  shift     Shift  @relation(fields: [shiftId], references: [id])
+  shiftId   Int
+}
+
+model AttendanceLog {
+  id          Int              @id @default(autoincrement())
+  user        User             @relation(fields: [userId], references: [id])
+  userId      Int
+  date        String
+  checkIn     String?
+  checkOut    String?
+  workedHours Float?
+  overtime    Float?
+  isHoliday   Boolean          @default(false)
+  status      StatusAttendance @default(PRESENT)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model MonthlySummary {
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int
+  month         String
+  totalHours    Float?
+  totalOvertime Float?
+  totalAbsent   Int?
+  finalizedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 enum Role {
   ADMIN
   USER
+}
+
+enum StatusAttendance {
+  PRESENT
+  ABSENT
+  HOLIDAY
 }
