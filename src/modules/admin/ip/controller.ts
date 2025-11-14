@@ -9,7 +9,7 @@ export const createIp = async (req: AuthRequest, res: Response, next: NextFuncti
         if (!req.user) {
             return res.status(401).json({ error: 'Unauthorized' });
         }
-        const ip = await prisma.iP.create({ data: { ...req.body, authorId: req.user.id } });
+        const ip = await prisma.iP.create({ data: req.body });
         res.status(201).json({ data: ip });
     } catch (error) {
         next(error)

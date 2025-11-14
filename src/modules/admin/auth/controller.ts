@@ -29,7 +29,6 @@ export const loginAdmin = async (req: Request, res: Response, next: NextFunction
         const data = loginSchema.parse(req.body);
         const user = await prisma.user.findUnique({ where: { phone: data.phone } });
         if (!user) return res.status(401).json({ error: "کاربر نامعتبر میباشد" });
-        if (user.role !== "ADMIN") return res.status(401).json({ error: 'Forbidden. Users only.' });
 
         const valid = await bcrypt.compare(data.password, user.password);
         if (!valid) return res.status(401).json({ error: "پسورد معتبر نیست" });

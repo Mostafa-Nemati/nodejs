@@ -35,7 +35,7 @@ model Shift {
   id             Int             @id @default(autoincrement())
   name           String
   shiftSchedules ShiftSchedule[]
-  ips            IP[]
+  ips            IP[]            @relation("ShiftIPs")
   users          User[]
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
@@ -52,11 +52,10 @@ model ShiftSchedule {
 }
 
 model IP {
-  id        Int    @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   name      String
   ipAddress String
-  shift     Shift  @relation(fields: [shiftId], references: [id])
-  shiftId   Int
+  shifts    Shift[] @relation("ShiftIPs")
 }
 
 model AttendanceLog {
