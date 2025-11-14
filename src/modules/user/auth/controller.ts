@@ -18,8 +18,12 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
         const user = await prisma.user.create({
             data: { ...req.body, password: hashedPassword },
         });
-
-        res.status(201).json({ data: user })
+        const userInfo = {
+            id: user.id,
+            name: user.name,
+            family: user.family
+        }
+        res.status(201).json({ data: userInfo, message: 'با موفقیت ثبت شد' })
     } catch (err) {
         next(err)
     }
@@ -31,17 +35,21 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
         const data = loginSchema.parse(req.body);
         const user = await prisma.user.findUnique({ where: { phone: data.phone } });
         if (!user) return res.status(401).json({ error: "کاربر نامعتبر میباشد" });
-        if (user.role !== "USER") return res.status(401).json({ error: 'Forbidden. Users only.' });
 
         const valid = await bcrypt.compare(data.password, user.password);
         if (!valid) return res.status(401).json({ error: "پسورد معتبر نیست" });
 
         const token = jwt.sign(
-            { id: user.id },
+            { id: user.id, role: user.role },
             process.env.JWT_SECRET || 'fallbackSecretKey',
             { expiresIn: '10d' }
         )
-        return { message: "با موفقیت ثبت شد.", user, access_token: token }
+        const userInfo = {
+            id: user.id,
+            name: user.name,
+            family: user.family,
+        }
+        res.status(200).json({ data: { user: userInfo, access_token: token }, message: "با موفقیت ثبت شد." });
     } catch (error) {
         next(error)
     }
