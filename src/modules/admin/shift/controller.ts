@@ -8,7 +8,7 @@ export const createShift = async (req: AuthRequest, res: Response, next: NextFun
         if (!req.user) {
             return res.status(401).json({ error: 'Unauthorized' });
         }
-        const shift = await prisma.shift.create({ data: { ...req.body, authorId: req.user.id } });
+        const shift = await prisma.shift.create({ data: req.body });
         res.status(201).json({ data: shift })
     } catch (error) {
         next(error)
