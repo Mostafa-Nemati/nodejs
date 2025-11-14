@@ -6,7 +6,7 @@ export const registerSchema = z.object({
     password: z.string().min(1, { message: 'پسورد الزامی است' }),
     nationalCode: z.string().optional(),
     phone: z.string().min(1, { message: 'پسورد الزامی است' }).max(11, { message: 'حداکثر ۱۱ رقم باشد' }),
-    role: z.enum(["ADMIN", "USER"]).optional()
+    shiftId: z.number().min(1, { message: 'انتخاب شیفت الزامی است' })
 })
 
 export const loginSchema = z.object({
