@@ -35,6 +35,7 @@ model Shift {
   id             Int             @id @default(autoincrement())
   name           String
   shiftSchedules ShiftSchedule[]
+  holidays       Json?
   ips            IP[]            @relation("ShiftIPs")
   users          User[]
   createdAt      DateTime        @default(now())
