@@ -14,6 +14,7 @@ export const createShiftSchema = z.object({
             )
             .length(7, "باید ۷ روز هفته را ارسال کنید."),
     }),
+    holidays: z.array(z.string()),
     ips: z
         .object({
             connect: z.array(
