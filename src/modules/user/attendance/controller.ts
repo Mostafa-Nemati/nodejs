@@ -110,8 +110,8 @@ export const checkOut = async (req: AuthRequest, res: Response) => {
         return res.status(400).json({ error: 'برای امروز شیفت تعریف نشده' })
     }
     const shiftEnd = dayjs(`${dayjs().format("YYYY-MM-DD")}T${scheduleTime.endTime}`);
-    const delayCheckOut = shiftEnd.subtract(30, 'minute');
-    if (now.isAfter(delayCheckOut)) {
+    const latestCheckOut = shiftEnd.add(30, 'minute');
+    if (now.isAfter(latestCheckOut)) {
         return res.status(400).json({ error: 'حداکثر  30 دقیقه بعداز شیفت امکان ثبت خروج وجود دارد' })
     }
 
