@@ -66,8 +66,9 @@ model AttendanceLog {
   date        String
   checkIn     String?
   checkOut    String?
-  workedHours Float?
-  overtime    Float?
+  workedHours String?
+  overTime    String?
+  delayTime   String?
   isHoliday   Boolean          @default(false)
   status      StatusAttendance @default(PRESENT)
   ipAddress   String?

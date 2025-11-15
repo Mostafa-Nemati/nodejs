@@ -46,9 +46,9 @@ export const checkIn = async (req: AuthRequest, res: Response) => {
     const now = dayjs();
     const checkInTime = dayjs().format("HH:mm");
     const shiftStart = dayjs(`${dayjs().format("YYYY-MM-DD")}T${schedule.startTime}`);
-    const earliestCheckIn = shiftStart.subtract(15, 'minute');
+    const earliestCheckIn = shiftStart.subtract(30, 'minute');
     if (now.isBefore(earliestCheckIn)) {
-        return res.status(400).json({ error: 'حداکثر  15 دقیقه قبل شیفت امکان ثبت وجود دارد' })
+        return res.status(400).json({ error: 'حداکثر  30 دقیقه قبل شیفت امکان ثبت وجود دارد' })
     }
 
 
@@ -87,11 +87,6 @@ export const checkOut = async (req: AuthRequest, res: Response) => {
     });
     if (!user) return res.status(404).json({ error: "کاربر یافت نشد" })
 
-    const log = await prisma.attendanceLog.findFirst({
-        where: { userId, date: today }
-    });
-    if (!log) return res.status(400).json({ error: 'ورد ثبت نشده است' });
-
     //checkig IP && shift
     if (!user.shift) {
         return res.status(400).json({ error: 'برای شما شیفت تعریف نشده است' })
@@ -100,6 +95,26 @@ export const checkOut = async (req: AuthRequest, res: Response) => {
         const validIp = user.shift.ips.some(i => i.ipAddress === IP);
         if (!validIp) return res.status(400).json({ error: 'آی پی معتبر نیست' })
     }
+
+    //checked log 
+    const log = await prisma.attendanceLog.findFirst({
+        where: { userId, date: today }
+    });
+    if (!log) return res.status(400).json({ error: 'ورود ثبت نشده است' });
+
+    //check shift time
+    const now = dayjs();
+    const dayCurrent = dayjs().day();
+    const scheduleTime = user.shift.shiftSchedules.find(s => s.dayOfWeek === dayCurrent);
+    if (!scheduleTime?.isActive) {
+        return res.status(400).json({ error: 'برای امروز شیفت تعریف نشده' })
+    }
+    const shiftEnd = dayjs(`${dayjs().format("YYYY-MM-DD")}T${scheduleTime.endTime}`);
+    const delayCheckOut = shiftEnd.subtract(30, 'minute');
+    if (now.isAfter(delayCheckOut)) {
+        return res.status(400).json({ error: 'حداکثر  30 دقیقه بعداز شیفت امکان ثبت خروج وجود دارد' })
+    }
+
 
     //check worked time
     const checkOutTime = dayjs().format("HH:mm");
@@ -122,11 +137,32 @@ export const checkOut = async (req: AuthRequest, res: Response) => {
     const schedule = shift.shiftSchedules.find(s => s.dayOfWeek === currentDay);
     const expectedTimeMinutes = toMinutes(schedule?.endTime) - toMinutes(schedule?.startTime);
     const calcoverTime = workedMinutes - expectedTimeMinutes;
-    const overTime = calcoverTime > 0 ? calcoverTime : 0;
+    const calcoverH = Math.floor(total / 60);
+    const calcoverM = total % 60;
+    const overTime = calcoverTime > 0
+        ? `${calcoverH.toString().padStart(2, "0")}:${calcoverM.toString().padStart(2, "0")}`
+        : '0';
 
     //check delay time
+    const time = expectedTimeMinutes - workedMinutes;
+    const timeH = Math.floor(total / 60);
+    const timeM = total % 60;
+    const delayTime = time > 0
+        ? `${timeH.toString().padStart(2, "0")}:${timeM.toString().padStart(2, "0")}`
+        : '0';
 
-    res.json({ message: "خروج ثبت شد", workedHours });
+
+    //Update Logs
+    await prisma.attendanceLog.update({
+        where: { id: log.id },
+        data: {
+            checkOut: checkOutTime,
+            workedHours,
+            overTime,
+            delayTime
+        }
+    })
+    res.json({ message: "خروج ثبت شد" });
 
 }
 
