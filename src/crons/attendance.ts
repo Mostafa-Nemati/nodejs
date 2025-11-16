@@ -1,12 +1,11 @@
 import dayjs from "dayjs";
-import cron from "node-cron";
 import { PrismaClient } from "../../generated/prisma";
 import { AtenStatus } from "../types/attendance";
 const prisma = new PrismaClient();
 
 
 export const attendance = async () => {
-    cron.schedule("59 23 * * *", async () => {
+    try {
         const today = dayjs().calendar("jalali").format("YYYY-MM-DD");
 
         const logs = await prisma.attendanceLog.findMany({
@@ -36,5 +35,7 @@ export const attendance = async () => {
                 })
             }
         }
-    })
+    } catch (error) {
+        console.error("Error updating attendane:", error);
+    }
 }
