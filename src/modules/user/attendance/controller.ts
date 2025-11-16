@@ -82,7 +82,7 @@ export const checkOut = async (req: AuthRequest, res: Response) => {
         include: {
             shift: {
                 include: { ips: true, shiftSchedules: true },
-            }
+            },
         }
     });
     if (!user) return res.status(404).json({ error: "کاربر یافت نشد" })
@@ -152,6 +152,21 @@ export const checkOut = async (req: AuthRequest, res: Response) => {
         : '0';
 
 
+    //update Wallet
+    const nowJalali = dayjs().calendar('jalali');
+    const daysInMonth = nowJalali.daysInMonth();
+    const daySalaray = (user.baseSalary ?? 0) / daysInMonth;
+    const minuteSalary = daySalaray / expectedTimeMinutes;
+    const earnedToday = workedMinutes * minuteSalary;
+
+    await prisma.wallet.update({
+        where: { userId },
+        data: {
+            balance: { increment: earnedToday }
+        }
+    })
+
+
     //Update Logs
     await prisma.attendanceLog.update({
         where: { id: log.id },
@@ -162,7 +177,7 @@ export const checkOut = async (req: AuthRequest, res: Response) => {
             delayTime
         }
     })
-    res.json({ message: "خروج ثبت شد" });
+    res.json({ message: "خروج ثبت شد", user });
 
 }
 

@@ -15,20 +15,22 @@ datasource db {
 }
 
 model User {
-  id               Int              @id @default(autoincrement())
-  name             String
-  family           String
-  phone            String           @unique
-  nationalCode     String?
-  password         String
-  baseSalary       Float?
-  role             Role             @default(USER)
-  shift            Shift?           @relation(fields: [shiftId], references: [id])
-  shiftId          Int?
-  attendanceLogs   AttendanceLog[]
-  monthlySummaries MonthlySummary[]
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  id                 Int                 @id @default(autoincrement())
+  name               String
+  family             String
+  phone              String              @unique
+  nationalCode       String?
+  password           String
+  baseSalary         Float?
+  role               Role                @default(USER)
+  shift              Shift?              @relation(fields: [shiftId], references: [id])
+  shiftId            Int?
+  attendanceLogs     AttendanceLog[]
+  monthlySummaries   MonthlySummary[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  wallets            Wallet[]
+  walletTransactions WalletTransaction[]
 }
 
 model Shift {
@@ -89,6 +91,31 @@ model MonthlySummary {
   totalHolidayWork Float?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
+}
+
+model Wallet {
+  id       Int      @id @default(autoincrement())
+  userId   Int      @unique
+  user     User     @relation(fields: [userId], references: [id])
+  date     DateTime
+  balance  Float    @default(0)
+  createAt DateTime @default(now())
+}
+
+model WalletTransaction {
+  id          Int             @id @default(autoincrement())
+  userId      Int
+  user        User            @relation(fields: [userId], references: [id])
+  type        TransactionType
+  amount      String
+  description String?
+  createAt    DateTime        @default(now())
+}
+
+enum TransactionType {
+  FINE
+  CREDIT
+  DEPOSIT
 }
 
 enum Role {
