@@ -31,6 +31,7 @@ model User {
   updatedAt          DateTime            @updatedAt
   wallets            Wallet[]
   walletTransactions WalletTransaction[]
+  leaveRquests       LeaveRquest[]
 }
 
 model Shift {
@@ -112,6 +113,20 @@ model WalletTransaction {
   createAt    DateTime        @default(now())
 }
 
+model LeaveRquest {
+  id           Int         @id @default(autoincrement())
+  user         User        @relation(fields: [userId], references: [id])
+  userId       Int
+  startDate    String
+  endDate      String
+  reason       String
+  type         LeaveType?
+  status       LeaveStatus
+  approvedBy   Int?
+  approvedDate DateTime?
+  createAt     DateTime    @default(now())
+}
+
 enum TransactionType {
   FINE
   CREDIT
@@ -127,4 +142,17 @@ enum StatusAttendance {
   PRESENT
   ABSENT
   HOLIDAY
+}
+
+enum LeaveStatus {
+  PENDING // در انتظار تایید
+  APPROVED // تایید شده
+  REJECTED // رد شده
+}
+
+enum LeaveType {
+  ANNUAL // مرخصی سالانه
+  SICK // مرخصی استعلاجی
+  UNPAID // مرخصی بدون حقوق
+  PERSONAL // مرخصی شخصی
 }

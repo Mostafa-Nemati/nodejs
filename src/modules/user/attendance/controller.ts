@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import jalaliday from "jalaliday";
 import { PrismaClient } from "../../../../generated/prisma";
 import { AtenStatus } from "../../../types/attendance";
+import { toMinutes } from "../../../utils/tominutes";
 dayjs.extend(jalaliday);
 const prisma = new PrismaClient()
 
@@ -118,10 +119,6 @@ export const checkOut = async (req: AuthRequest, res: Response) => {
 
     //check worked time
     const checkOutTime = dayjs().format("HH:mm");
-    function toMinutes(time: any) {
-        const [h, m] = time ? time.split(":").map(Number) : [];
-        return h * 60 + m;
-    }
     const workedMinutes = toMinutes(checkOutTime) - toMinutes(log.checkIn);
     const total = workedMinutes < 0 ? workedMinutes + 24 * 60 : workedMinutes;
     const hours = Math.floor(total / 60);
