@@ -102,7 +102,7 @@ export const finalizeMonthlySalary = async () => {
                 where: { userId: user.id },
                 data: {
                     balance: 0,
-                    credits: finalSalary
+                    credits: { increment: finalSalary }
                 }
             })
         }
