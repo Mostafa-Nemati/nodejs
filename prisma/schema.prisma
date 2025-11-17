@@ -88,6 +88,7 @@ model MonthlySummary {
   totalOvertime    Float?
   totalSalary      Float?
   totalAbsent      Int?
+  totalDelayTime   Float?
   finalizedAt      DateTime?
   totalHolidayWork Float?
   createdAt        DateTime  @default(now())
@@ -95,12 +96,15 @@ model MonthlySummary {
 }
 
 model Wallet {
-  id       Int      @id @default(autoincrement())
-  userId   Int      @unique
-  user     User     @relation(fields: [userId], references: [id])
-  date     DateTime
-  balance  Float    @default(0)
-  createAt DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  user      User     @relation(fields: [userId], references: [id])
+  date      DateTime
+  balance   Float    @default(0)
+  credits   Int      @default(0)
+  penalties Int      @default(0)
+  updatedAt DateTime @updatedAt
+  createAt  DateTime @default(now())
 }
 
 model WalletTransaction {
@@ -111,6 +115,7 @@ model WalletTransaction {
   amount      String
   description String?
   createAt    DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
 }
 
 model LeaveRquest {
@@ -125,6 +130,7 @@ model LeaveRquest {
   approvedBy   Int?
   approvedDate DateTime?
   createAt     DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }
 
 enum TransactionType {

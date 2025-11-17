@@ -1,7 +1,10 @@
 import dayjs from "dayjs";
 import { PrismaClient } from "../../generated/prisma";
 import { AtenStatus } from "../types/attendance";
+import jalaliday from "jalaliday";
+
 const prisma = new PrismaClient();
+dayjs.extend(jalaliday);
 
 
 export const attendance = async () => {

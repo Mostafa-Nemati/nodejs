@@ -1,7 +1,9 @@
 import dayjs from "dayjs"
 import { PrismaClient } from "../../generated/prisma";
 import { toMinutes } from "../utils/tominutes";
+import jalaliday from "jalaliday";
 const prisma = new PrismaClient()
+dayjs.extend(jalaliday);
 
 export const updateWallet = async () => {
     const today = dayjs().calendar('jalali').format("YYYY-MM-DD");
