@@ -11,5 +11,5 @@ export const registerSchema = z.object({
 
 export const loginSchema = z.object({
     password: z.string().min(1, { message: 'پسورد الزامی است' }),
-    phone: z.string().min(1, { message: 'پسورد الزامی است' }).max(11, { message: 'حداکثر ۱۱ رقم باشد' }),
+    phone: z.string().min(1, { message: 'شماره موبایل الزامی است' }).max(11, { message: 'حداکثر ۱۱ رقم باشد' }),
 })

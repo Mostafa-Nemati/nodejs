@@ -32,12 +32,16 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
 //User login
 export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const data = loginSchema.parse(req.body);
-        const user = await prisma.user.findUnique({ where: { phone: data.phone } });
-        if (!user) return res.status(401).json({ error: "کاربر نامعتبر میباشد" });
+        const parsed = loginSchema.safeParse(req.body);
+        if (!parsed.success) {
+            return res.status(400).json({ errors: parsed });
+        }
+        const { phone, password } = req.body;
+        const user = await prisma.user.findUnique({ where: { phone: phone } });
+        if (!user) return res.status(422).json({ error: "کاربر نامعتبر میباشد" });
 
-        const valid = await bcrypt.compare(data.password, user.password);
-        if (!valid) return res.status(401).json({ error: "پسورد معتبر نیست" });
+        const valid = await bcrypt.compare(password, user.password);
+        if (!valid) return res.status(422).json({ error: "پسورد معتبر نیست" });
 
         const token = jwt.sign(
             { id: user.id, role: user.role },
