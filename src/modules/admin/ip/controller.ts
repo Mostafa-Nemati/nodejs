@@ -1,7 +1,6 @@
 import { NextFunction, Response } from "express";
-import { PrismaClient } from "../../../../generated/prisma";
 import { AuthRequest } from "../../../types/auth-request";
-const prisma = new PrismaClient();
+import { prisma } from "../../../config/prisma";
 
 
 export const createIp = async (req: AuthRequest, res: Response, next: NextFunction) => {

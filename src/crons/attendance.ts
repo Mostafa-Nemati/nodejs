@@ -1,9 +1,8 @@
 import dayjs from "dayjs";
-import { PrismaClient } from "../../generated/prisma";
 import { AtenStatus } from "../types/attendance";
 import jalaliday from "jalaliday";
+import { prisma } from "../config/prisma";
 
-const prisma = new PrismaClient();
 dayjs.extend(jalaliday);
 
 
@@ -23,7 +22,7 @@ export const attendance = async () => {
         for (const log of logs) {
             const dayOfWeek = dayjs().day();
             const schedule = log.user.shift?.shiftSchedules.find(
-                (s) => s.dayOfWeek === dayOfWeek
+                (s: any) => s.dayOfWeek === dayOfWeek
             )
 
             if (!schedule || !schedule.isActive) continue;

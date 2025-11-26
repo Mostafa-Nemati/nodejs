@@ -1,12 +1,10 @@
 import cron from 'node-cron'
 import jalaliday from "jalaliday";
 import dayjs from 'dayjs';
-import { PrismaClient } from '../../generated/prisma';
 import { AtenStatus } from '../types/attendance';
 import { toMinutes } from '../utils/tominutes';
+import { prisma } from '../config/prisma';
 dayjs.extend(jalaliday);
-
-const prisma = new PrismaClient()
 
 export const finalizeMonthlySalary = async () => {
     cron.schedule("10 0 1 * *", async () => {
@@ -38,11 +36,11 @@ export const finalizeMonthlySalary = async () => {
 
             for (let day = 1; day <= daysInMonht; day++) {
                 const date = `${lastMonth}-${String(day).padStart(2, "0")}`;
-                const log = logs.find((l) => l.date === date);
+                const log = logs.find((l: any) => l.date === date);
 
                 const dow = dayjs(date).day();
                 const schedule = user.shift?.shiftSchedules.find(
-                    (s) => s.dayOfWeek === dow && s.isActive
+                    (s: any) => s.dayOfWeek === dow && s.isActive
                 );
                 if (!schedule) continue;
 

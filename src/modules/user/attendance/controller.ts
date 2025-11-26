@@ -3,11 +3,10 @@ import { AuthRequest } from "../../../types/auth-request";
 import { getNetwork } from "../../../utils/network";
 import dayjs from "dayjs";
 import jalaliday from "jalaliday";
-import { PrismaClient } from "../../../../generated/prisma";
 import { AtenStatus } from "../../../types/attendance";
 import { toMinutes } from "../../../utils/tominutes";
+import { prisma } from "../../../config/prisma";
 dayjs.extend(jalaliday);
-const prisma = new PrismaClient()
 
 export const checkIn = async (req: AuthRequest, res: Response) => {
     const userId = req.user?.id;
@@ -32,13 +31,13 @@ export const checkIn = async (req: AuthRequest, res: Response) => {
 
     //checkig IP
     if (user.shift.ips) {
-        const validIp = user.shift.ips.some(i => i.ipAddress === IP);
+        const validIp = user.shift.ips.some((i: any) => i.ipAddress === IP);
         if (!validIp) return res.status(400).json({ error: 'آی پی معتبر نیست' })
     }
 
     //check days
     const currentDay = dayjs().day();
-    const schedule = shift.shiftSchedules.find(s => s.dayOfWeek === currentDay);
+    const schedule = shift.shiftSchedules.find((s: any) => s.dayOfWeek === currentDay);
     if (!schedule?.isActive) {
         return res.status(400).json({ error: 'برای امروز شیفت تعریف نشده' })
     }
@@ -93,7 +92,7 @@ export const checkOut = async (req: AuthRequest, res: Response) => {
         return res.status(400).json({ error: 'برای شما شیفت تعریف نشده است' })
     }
     if (user.shift.ips) {
-        const validIp = user.shift.ips.some(i => i.ipAddress === IP);
+        const validIp = user.shift.ips.some((i: any) => i.ipAddress === IP);
         if (!validIp) return res.status(400).json({ error: 'آی پی معتبر نیست' })
     }
 
@@ -106,7 +105,7 @@ export const checkOut = async (req: AuthRequest, res: Response) => {
     //check shift time
     const now = dayjs();
     const dayCurrent = dayjs().day();
-    const scheduleTime = user.shift.shiftSchedules.find(s => s.dayOfWeek === dayCurrent);
+    const scheduleTime = user.shift.shiftSchedules.find((s: any) => s.dayOfWeek === dayCurrent);
     if (!scheduleTime?.isActive) {
         return res.status(400).json({ error: 'برای امروز شیفت تعریف نشده' })
     }
@@ -131,7 +130,7 @@ export const checkOut = async (req: AuthRequest, res: Response) => {
     //check overTime time
     const currentDay = dayjs().day();
     const shift = user.shift;
-    const schedule = shift.shiftSchedules.find(s => s.dayOfWeek === currentDay);
+    const schedule = shift.shiftSchedules.find((s: any) => s.dayOfWeek === currentDay);
     const expectedTimeMinutes = toMinutes(schedule?.endTime) - toMinutes(schedule?.startTime);
     const calcoverTime = workedMinutes - expectedTimeMinutes;
     const calcoverH = Math.floor(total / 60);

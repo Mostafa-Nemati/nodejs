@@ -1,7 +1,6 @@
 import { NextFunction, Response } from "express";
 import { AuthRequest } from "../../../types/auth-request";
-import { PrismaClient } from "../../../../generated/prisma";
-const prisma = new PrismaClient()
+import { prisma } from "../../../config/prisma";
 
 export const createShift = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {

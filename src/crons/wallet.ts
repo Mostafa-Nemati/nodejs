@@ -1,8 +1,7 @@
 import dayjs from "dayjs"
-import { PrismaClient } from "../../generated/prisma";
 import { toMinutes } from "../utils/tominutes";
 import jalaliday from "jalaliday";
-const prisma = new PrismaClient()
+import { prisma } from "../config/prisma";
 dayjs.extend(jalaliday);
 
 export const updateWallet = async () => {
@@ -30,7 +29,7 @@ export const updateWallet = async () => {
             if (!shift) continue;
 
             const shiftSchedule = shift?.shiftSchedules.find(
-                s => s.dayOfWeek === dayWeek
+                (s: any) => s.dayOfWeek === dayWeek
             );
             const holiday = shift?.holidays ? JSON.parse(shift.holidays as string) : [];
 

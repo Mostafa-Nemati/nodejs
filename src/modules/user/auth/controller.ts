@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { PrismaClient } from "../../../../generated/prisma";
 import jwt from 'jsonwebtoken';
 import { loginSchema } from "./validator";
-const prisma = new PrismaClient();
+import { prisma } from "../../../config/prisma";
 
 //User register
 export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
