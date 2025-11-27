@@ -44,7 +44,7 @@ export const checkIn = async (req: AuthRequest, res: Response) => {
     }
 
     const shiftEnd = dayjs(`${dayjs().format("YYYY-MM-DD")}T${schedule.endTime}`);
-    const latestCheckOut = shiftEnd.add(30, 'minute');
+    const latestCheckOut = shiftEnd.add(1, 'minute');
     if (now.isAfter(latestCheckOut)) {
         return res.status(422).json({ error: 'برای امروز شیفت تعریف نشده' })
     }
