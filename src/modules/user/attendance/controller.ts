@@ -12,6 +12,7 @@ export const checkIn = async (req: AuthRequest, res: Response) => {
     const userId = req.user?.id;
     const IP = await getNetwork();
     const today = dayjs().calendar("jalali").format("YYYY-MM-DD");
+    const now = dayjs();
 
     const user = await prisma.user.findUnique({
         where: { id: userId },
@@ -25,30 +26,35 @@ export const checkIn = async (req: AuthRequest, res: Response) => {
 
     //shift
     if (!user.shift) {
-        return res.status(400).json({ error: 'برای شما شیفت تعریف نشده است' })
+        return res.status(422).json({ error: 'برای شما شیفت تعریف نشده است' })
     }
     const shift = user.shift;
 
     //checkig IP
     if (user.shift.ips) {
         const validIp = user.shift.ips.some((i: any) => i.ipAddress === IP);
-        if (!validIp) return res.status(400).json({ error: 'آی پی معتبر نیست' })
+        if (!validIp) return res.status(422).json({ error: 'آی پی معتبر نیست' })
     }
 
     //check days
     const currentDay = dayjs().day();
     const schedule = shift.shiftSchedules.find((s: any) => s.dayOfWeek === currentDay);
     if (!schedule?.isActive) {
-        return res.status(400).json({ error: 'برای امروز شیفت تعریف نشده' })
+        return res.status(422).json({ error: 'برای امروز شیفت تعریف نشده' })
+    }
+
+    const shiftEnd = dayjs(`${dayjs().format("YYYY-MM-DD")}T${schedule.endTime}`);
+    const latestCheckOut = shiftEnd.add(30, 'minute');
+    if (now.isAfter(latestCheckOut)) {
+        return res.status(422).json({ error: 'برای امروز شیفت تعریف نشده' })
     }
 
     //check shift time
-    const now = dayjs();
     const checkInTime = dayjs().format("HH:mm");
     const shiftStart = dayjs(`${dayjs().format("YYYY-MM-DD")}T${schedule.startTime}`);
     const earliestCheckIn = shiftStart.subtract(30, 'minute');
     if (now.isBefore(earliestCheckIn)) {
-        return res.status(400).json({ error: 'حداکثر  30 دقیقه قبل شیفت امکان ثبت وجود دارد' })
+        return res.status(422).json({ error: 'حداکثر  30 دقیقه قبل شیفت امکان ثبت وجود دارد' })
     }
 
 
@@ -89,30 +95,30 @@ export const checkOut = async (req: AuthRequest, res: Response) => {
 
     //checkig IP && shift
     if (!user.shift) {
-        return res.status(400).json({ error: 'برای شما شیفت تعریف نشده است' })
+        return res.status(422).json({ error: 'برای شما شیفت تعریف نشده است' })
     }
     if (user.shift.ips) {
         const validIp = user.shift.ips.some((i: any) => i.ipAddress === IP);
-        if (!validIp) return res.status(400).json({ error: 'آی پی معتبر نیست' })
+        if (!validIp) return res.status(422).json({ error: 'آی پی معتبر نیست' })
     }
 
     //checked log 
     const log = await prisma.attendanceLog.findFirst({
         where: { userId, date: today }
     });
-    if (!log) return res.status(400).json({ error: 'ورود ثبت نشده است' });
+    if (!log) return res.status(422).json({ error: 'ورود ثبت نشده است' });
 
     //check shift time
     const now = dayjs();
     const dayCurrent = dayjs().day();
     const scheduleTime = user.shift.shiftSchedules.find((s: any) => s.dayOfWeek === dayCurrent);
     if (!scheduleTime?.isActive) {
-        return res.status(400).json({ error: 'برای امروز شیفت تعریف نشده' })
+        return res.status(422).json({ error: 'برای امروز شیفت تعریف نشده' })
     }
     const shiftEnd = dayjs(`${dayjs().format("YYYY-MM-DD")}T${scheduleTime.endTime}`);
     const latestCheckOut = shiftEnd.add(30, 'minute');
     if (now.isAfter(latestCheckOut)) {
-        return res.status(400).json({ error: 'حداکثر  30 دقیقه بعداز شیفت امکان ثبت خروج وجود دارد' })
+        return res.status(422).json({ error: 'حداکثر  30 دقیقه بعداز شیفت امکان ثبت خروج وجود دارد' })
     }
 
 
@@ -155,10 +161,19 @@ export const checkOut = async (req: AuthRequest, res: Response) => {
     const minuteSalary = daySalaray / expectedTimeMinutes;
     const earnedToday = workedMinutes * minuteSalary;
 
-    await prisma.wallet.update({
+    if (!userId) {
+        return res.status(400).json({ error: "userId معتبر نیست" });
+    }
+
+    await prisma.wallet.upsert({
         where: { userId },
-        data: {
+        update: {
             balance: { increment: earnedToday }
+        },
+        create: {
+            date: new Date(),
+            userId: userId,
+            balance: earnedToday
         }
     })
 
