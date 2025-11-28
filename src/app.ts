@@ -7,6 +7,7 @@ import attendanceRoutesUser from './modules/user/attendance/route';
 import dashboard from './modules/user/dashboard/route';
 import leave from './modules/user/leave/route';
 import wallet from './modules/user/wallet/route';
+import profile from './modules/user/profile/route';
 import { errorHandler } from "./middlewares/errorHandler";
 import multer from 'multer';
 import cors from 'cors';
@@ -43,6 +44,7 @@ app.use('/api/user/attendance', attendanceRoutesUser);
 app.use("/api/user", dashboard);
 app.use("/api/user", wallet);
 app.use("/api/user", leave);
+app.use("/api/user", profile);
 
 
 
