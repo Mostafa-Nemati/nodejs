@@ -2,6 +2,7 @@ import { NextFunction, Response } from "express";
 import { AuthRequest } from "../../../types/auth-request";
 import { LeaveSchema } from "./validate";
 import { prisma } from "../../../config/prisma";
+import { LeaveStatus } from "../../../types/leave";
 
 
 export const requestLeave = async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -10,7 +11,7 @@ export const requestLeave = async (req: AuthRequest, res: Response, next: NextFu
         if (!parse.success) {
             res.status(400).json({ errors: parse })
         }
-        const leave = await prisma.leaveRquest.create(req.body);
+        const leave = await prisma.leaveRquest.create({ ...req.body, status: LeaveStatus.PENDING });
         res.status(201).json({ data: leave, message: 'باموفقیت انجام شد' })
     } catch (error) {
         next(error)
@@ -31,5 +32,4 @@ export const logLeaves = async (req: AuthRequest, res: Response) => {
     });
 
     res.status(200).json({ data: logLeaves, message: 'باموفقیت انجام شد' })
-
 }
