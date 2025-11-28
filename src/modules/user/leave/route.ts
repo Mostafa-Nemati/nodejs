@@ -8,6 +8,6 @@ const router = Router()
 //POST
 router.post("/add/leave", authMiddelware, ipAddressMiddleware, requestLeave);
 //GET
-router.post("/leaves", authMiddelware, ipAddressMiddleware, logLeaves);
+router.get("/leaves", authMiddelware, ipAddressMiddleware, logLeaves);
 
 export default router;
