@@ -63,7 +63,7 @@ export const checkIn = async (req: AuthRequest, res: Response) => {
     if (!userId) {
         throw new Error("User ID is required");
     }
-    const log = await prisma.attendanceLog.create({
+    await prisma.attendanceLog.create({
         data: {
             userId,
             date: today,
@@ -74,6 +74,9 @@ export const checkIn = async (req: AuthRequest, res: Response) => {
     })
     res.json({ message: "ورود ثبت شد" });
 }
+
+
+
 // Implement Check out
 export const checkOut = async (req: AuthRequest, res: Response) => {
     const userId = req.user?.id;
@@ -101,7 +104,10 @@ export const checkOut = async (req: AuthRequest, res: Response) => {
 
     //checked log 
     const log = await prisma.attendanceLog.findFirst({
-        where: { userId, date: today }
+        where: {
+            date: today,
+            id: Number(req.query.id)
+        }
     });
     if (!log) return res.status(422).json({ error: 'ورود ثبت نشده است' });
 
@@ -199,7 +205,7 @@ export const history = async (req: AuthRequest, res: Response) => {
         where: {
             userId: req.user.id,
             date: req.query.date as string
-        }
+        },
     });
 
 

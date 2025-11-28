@@ -32,7 +32,6 @@ export const infoDashbaord = async (req: AuthRequest, res: Response) => {
         orderBy: {
             id: "desc"
         }
-
     })
 
     const tominuteStartTime = Number(toMinutes(schedule?.startTime));
@@ -51,7 +50,7 @@ export const infoDashbaord = async (req: AuthRequest, res: Response) => {
         },
         shift: schedule,
         totalHour: totalWorkedTime,
-        present: attendance?.status === AtenStatus.PRESENT
+        attendance: attendance
     }
 
     res.status(200).json({ data: data, message: 'با موفقیت انجام شد' })
