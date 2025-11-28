@@ -8,6 +8,7 @@ import { toMinutes } from "../../../utils/tominutes";
 import { prisma } from "../../../config/prisma";
 dayjs.extend(jalaliday);
 
+// Implement Check out
 export const checkIn = async (req: AuthRequest, res: Response) => {
     const userId = req.user?.id;
     const IP = await getNetwork();
@@ -73,11 +74,7 @@ export const checkIn = async (req: AuthRequest, res: Response) => {
     })
     res.json({ message: "ورود ثبت شد" });
 }
-
-/*
-* Implement Check out
-*/
-
+// Implement Check out
 export const checkOut = async (req: AuthRequest, res: Response) => {
     const userId = req.user?.id;
     const IP = await getNetwork();
@@ -192,4 +189,20 @@ export const checkOut = async (req: AuthRequest, res: Response) => {
 
 }
 
+// Implement Daily Log
+export const history = async (req: AuthRequest, res: Response) => {
+    if (!req.user) {
+        return res.status(422).json({ error: 'کاربر یافت نشد' })
+    }
+
+    const history = await prisma.attendanceLog.findMany({
+        where: {
+            userId: req.user.id,
+            date: req.query.date as string
+        }
+    });
+
+
+    res.status(200).json({ data: history, message: 'با موفقیت انجام شد' })
+}
 
