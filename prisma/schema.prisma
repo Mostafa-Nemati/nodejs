@@ -11,7 +11,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  //url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -124,9 +124,10 @@ model LeaveRquest {
   userId       Int
   startDate    String
   endDate      String
-  reason       String
-  type         LeaveType?
+  reason       String?
+  type         LeaveType
   status       LeaveStatus
+  duration     String
   approvedBy   Int?
   approvedDate DateTime?
   createAt     DateTime    @default(now())
@@ -157,8 +158,6 @@ enum LeaveStatus {
 }
 
 enum LeaveType {
-  ANNUAL // مرخصی سالانه
-  SICK // مرخصی استعلاجی
-  UNPAID // مرخصی بدون حقوق
-  PERSONAL // مرخصی شخصی
+  HOURLY // مرخصی ساعتی
+  DAILY // مرخصی روزانه
 }

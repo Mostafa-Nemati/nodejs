@@ -201,14 +201,27 @@ export const history = async (req: AuthRequest, res: Response) => {
         return res.status(422).json({ error: 'کاربر یافت نشد' })
     }
 
-    const history = await prisma.attendanceLog.findMany({
+    const logs = await prisma.attendanceLog.findMany({
         where: {
             userId: req.user.id,
             date: req.query.date as string
         },
     });
 
+    const formattedLogs = logs.map(log => {
+        const checkIn = log.checkIn ? toMinutes(log.checkIn) : 0;
+        const checkOut = log.checkOut ? toMinutes(log.checkOut) : 0;
 
-    res.status(200).json({ data: history, message: 'با موفقیت انجام شد' })
+        const totalMinutes = Number(checkOut) - Number(checkIn);
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+
+        return {
+            ...log,
+            totalWorkedTime: `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`,
+        };
+    });
+
+    res.status(200).json({ data: formattedLogs, message: 'با موفقیت انجام شد' })
 }
 

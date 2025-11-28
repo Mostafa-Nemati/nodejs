@@ -5,6 +5,7 @@ import shiftRoutesAdmin from './modules/admin/shift/route';
 import authRoutesUser from './modules/user/auth/route';
 import attendanceRoutesUser from './modules/user/attendance/route';
 import dashboard from './modules/user/dashboard/route';
+import leave from './modules/user/leave/route';
 import wallet from './modules/user/wallet/route';
 import { errorHandler } from "./middlewares/errorHandler";
 import multer from 'multer';
@@ -41,6 +42,7 @@ app.use('/api/user/auth', authRoutesUser);
 app.use('/api/user/attendance', attendanceRoutesUser);
 app.use("/api/user", dashboard);
 app.use("/api/user", wallet);
+app.use("/api/user", leave);
 
 
 
