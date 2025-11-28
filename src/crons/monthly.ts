@@ -12,7 +12,7 @@ export const finalizeMonthlySalary = async () => {
         const lastMonth = dayjs()
             .subtract(1, "month")
             .calendar("jalali")
-            .format("YYYY-MM-DD");
+            .format("YYYY-MM");
 
         const daysInMonht = dayjs(lastMonth + "-01")
             .calendar("jalali")
