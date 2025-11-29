@@ -34,8 +34,8 @@ export const infoDashbaord = async (req: AuthRequest, res: Response) => {
         }
     })
 
-    const tominuteStartTime = Number(toMinutes(schedule?.startTime));
-    const tominuteEndTime = Number(toMinutes(schedule?.endTime));
+    const tominuteStartTime = schedule?.startTime ? Number(toMinutes(schedule?.startTime)) : 0;
+    const tominuteEndTime = schedule?.endTime ? Number(toMinutes(schedule?.endTime)) : 0;
     const totalTime = tominuteEndTime - tominuteStartTime;
     const H = Math.floor(totalTime / 60);
     const M = totalTime % 60;

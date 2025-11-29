@@ -11,7 +11,9 @@ export const summary = async (req: AuthRequest, res: Response) => {
     const summary = await prisma.monthlySummary.findMany({
         where: {
             userId,
-            month: req.query.month as string
+            month: {
+                startsWith: req.query.date as string
+            }
         }
     });
 
