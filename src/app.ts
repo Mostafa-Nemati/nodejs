@@ -9,6 +9,8 @@ import leave from './modules/user/leave/route';
 import wallet from './modules/user/wallet/route';
 import profile from './modules/user/profile/route';
 import summary from './modules/user/summary/route';
+import notification from './modules/user/notification/router';
+import transaction from './modules/user/transaction/route';
 import { errorHandler } from "./middlewares/errorHandler";
 import multer from 'multer';
 import cors from 'cors';
@@ -47,6 +49,8 @@ app.use("/api/user", wallet);
 app.use("/api/user", leave);
 app.use("/api/user", profile);
 app.use("/api/user", summary);
+app.use("/api/user", transaction);
+app.use("/api/user", notification);
 
 
 
