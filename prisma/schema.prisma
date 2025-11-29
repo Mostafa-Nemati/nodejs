@@ -32,6 +32,7 @@ model User {
   wallets            Wallet[]
   walletTransactions WalletTransaction[]
   leaveRquests       LeaveRquest[]
+  notifications      Notification[]
 }
 
 model Shift {
@@ -108,14 +109,26 @@ model Wallet {
 }
 
 model WalletTransaction {
-  id          Int             @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   userId      Int
-  user        User            @relation(fields: [userId], references: [id])
-  type        TransactionType
+  user        User     @relation(fields: [userId], references: [id])
+  image       String?
   amount      String
+  date        String
   description String?
-  createAt    DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  createAt    DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Notification {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  title       String
+  description String?
+  read        Boolean  @default(false)
+  createAt    DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model LeaveRquest {
@@ -132,12 +145,6 @@ model LeaveRquest {
   approvedDate DateTime?
   createAt     DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
-}
-
-enum TransactionType {
-  FINE
-  CREDIT
-  DEPOSIT
 }
 
 enum Role {
