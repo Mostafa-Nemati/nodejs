@@ -14,5 +14,5 @@ export const notification = async (req: AuthRequest, res: Response) => {
         }
     });
 
-    res.status(201).json({ data: notification, message: 'با موفقیت انجام شد' })
+    res.status(201).json({ data: notifications, message: 'با موفقیت انجام شد' })
 }
