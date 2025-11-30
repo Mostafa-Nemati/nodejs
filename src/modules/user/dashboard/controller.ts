@@ -40,6 +40,7 @@ export const infoDashbaord = async (req: AuthRequest, res: Response) => {
     const H = Math.floor(totalTime / 60);
     const M = totalTime % 60;
     const totalWorkedTime = `${String(H).padStart(2, "0")}:${String(M).padStart(2, "0")}`;
+    const isCheckIn = (attendance && !attendance.checkOut) ? true : false;
 
     const data = {
         user: {
@@ -50,7 +51,8 @@ export const infoDashbaord = async (req: AuthRequest, res: Response) => {
         },
         shift: schedule,
         totalHour: totalWorkedTime,
-        attendance: attendance
+        isCheckIn,
+        attendance: attendance ?? null
     }
 
     res.status(200).json({ data: data, message: 'با موفقیت انجام شد' })
